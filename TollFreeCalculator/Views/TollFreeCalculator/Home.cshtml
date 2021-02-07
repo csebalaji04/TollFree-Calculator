@@ -1,0 +1,254 @@
+﻿@model TollTimes
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+     <title>Toll Fee Calculator</title>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    
+     <style>
+          /* Remove the navbar's default margin-bottom and rounded borders */
+          .navbar {
+               margin-bottom: 0;
+               border-radius: 0;
+          }
+
+          /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+          .row.content {
+               height: 1000px;
+          }
+
+          /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+          .row.passagerule {
+               height: 45px;
+          }
+
+          /* Set gray background color and 100% height */
+          .sidenav {
+               padding-top: 20px;
+               background-color: #f1f1f1;
+               height: 100%;
+          }
+
+          /* Set black background color, white text and some padding */
+          footer {
+               background-color: #555;
+               color: white;
+               padding: 15px;
+          }
+
+          .td.content {
+               width: 300px;
+               height: 50px;
+          }
+
+          tollselection {
+               height: 50px;
+          }
+
+          .field-validation-error {
+               color: red;
+          }
+
+          .validation-summary-errors {
+               font-weight: bold;
+               color: red;
+          }
+
+          .error {
+               color: red;
+          }
+          .form-control
+          {
+               width:150px;
+          }
+          .navbar-inverse
+          {
+               background-color: #F5F5F5;
+               border-color: #F5F5F5;
+               border: 1px solid #e3e3e3;
+               padding:2px;
+          }
+
+          .text {
+  fill: url(#gr-radial);
+}
+
+/* Other styles */
+/*html, body {
+  height: 100%;
+}*/
+
+/*body {
+  background: #222 -webkit-linear-gradient(0deg, #222 50%, #272727 50%);
+  background: #222 linear-gradient(90deg, #222 50%, #272727 50%);
+  background-size: .2em 100%;
+  font: 14.5em/1 Open Sans, Impact;
+  text-transform: uppercase;
+  margin: 0;
+}*/
+
+svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222 -webkit-linear-gradient(0deg, #f5f5f5 50%, #f5f5f5 50%);
+  background: #222 linear-gradient(90deg, #f5f5f5 50%, #f5f5f5 50%);
+  background-size: .2em 100%;
+  font: 14.5em/1 Open Sans, Impact;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+     </style>
+</head>
+<body>
+     
+     <nav class="navbar navbar-inverse">
+          <div class="container-fluid">
+               <marquee behavior="scroll" direction="left">TOLL FEE CALCULATOR</marquee>
+          </div>
+          <svg viewBox="0 0 600 300">
+
+               <!-- Gradient -->
+               <radialGradient id="gr-radial"
+                               cx="50%" cy="50%" r="70%">
+                    <!-- Animation for radius of gradient -->
+                    <animate attributeName="r"
+                             values="0%;150%;100%;0%"
+                             dur="5s" repeatCount="indefinite" />
+                    <!-- Animation for colors of stop-color -->
+                    <stop stop-color="#FFF" offset="0">
+                         <animate attributeName="stop-color"
+                                  values="#333;#FFF;#FFF;#333"
+                                  dur="5s" repeatCount="indefinite" />
+                    </stop>
+                    <stop stop-color="rgba(55,55,55,0)" offset="100%" />
+               </radialGradient>
+
+               <!-- Text -->
+               <text text-anchor="middle"
+                     x="50%"
+                     y="50%"
+                     dy=".35em"
+                     class="text">
+                    TOLL FEE CALCULATOR
+               </text>
+          </svg>
+     </nav>
+
+     <div class="container-fluid text-center">
+          <div class="row content">
+               <div class="col-sm-8 text-left">
+                    <h1>Times and amounts for congestion tax in Gothenburg</h1>
+                    <h3>Congestion tax is levied at fixed times for vehicles driven into and out of Gothenburg.</h3>
+                    <p>
+                         The maximum amount per day and vehicle is SEK 60.
+
+                         Tax is not levied on public holidays, the day before the public holiday or during the month of July.
+                    </p>
+                    <hr>
+                    <div>
+                    </div>
+                    <div>
+                         <table>
+                              @using (Html.BeginForm("GetTollFee", "TollFreeCalculator", FormMethod.Post))
+                              {
+                                   <tr>
+
+                                        <td class=" td content">
+                                             <p> Please select date when you travelled</p>
+                                        </td>
+                                        <td style="          width: 240px;
+          margin-left: 30px;
+          margin-right: 30px;
+          height: 50px">
+                                             @Html.EditorFor(m => m.StartDate, new { htmlAttributes = new { @class = "datepicker" }, style = "width:240px;height:35px" })
+                                        </td>
+                                   </tr>
+                                   <tr>
+                                        <td>
+                                             <p> Please select vehicle type you travelled</p>
+                                        </td>
+                                        <td style="width: 240px; margin-left: 30px; margin-right: 30px; height: 50px">
+                                             @Html.DropDownListFor(m => m.VehicleList, new SelectList(Model.VehicleList, ""), "Select", new { @class = "form-control valid" })
+
+                                        </td>
+                                        
+                                   </tr>
+                                   <tr>
+                                        <td>
+                                             <p> Please select the no of toll you crossed</p>
+                                        </td>
+                                        <td style="width:240px;margin-left:30px; margin-right:30px;height:50px">
+                                             @Html.DropDownListFor(model => model.TollCount, new SelectList(Enum.GetValues(typeof(TollCount))), "Select", new { @class = "form-control valid", @onchange = "this.form.submit();" })
+                                        </td>
+                                   </tr>
+                                   @for (int i = 1; i <= Convert.ToInt32(Model.TollCount); ++i)
+                                   {
+                                        <tr>
+                                             <td style="height: 50px">
+                                                  <p> Please select when you crossed the @i toll</p>
+                                             </td>
+                                             <td style="width:240px;margin-left:30px; margin-right:30px;height:50px">
+                                                  @Html.DropDownListFor(m => m.MyMappings, new SelectList(Model.MyMappings.Keys, "Key"), new { @class = "form-control valid" })
+                                             </td>
+                                        </tr>
+                                   }
+                                   <tr>
+                                        <td>
+                                             <input type="submit" id="btnSubmit" name="Calculate" value="Calculate" class="btn btn-success" />
+                                        </td>
+                                        <td>
+                                             @if (ViewBag.IsShow)
+                                             {
+                                                  <input type="text" name="Sum Amount" value="@Model.SumAmount" class="btn btn-success" />
+                                             }
+
+                                        </td>
+                                   </tr>
+
+                              }
+                         </table>
+                    </div>
+               </div>
+               <div class="col-sm-4 sidenav">
+                    <div class="well">
+                         <p>@Html.Partial("TollFeeDisplay")</p>
+                    </div>
+                    <hr>
+                    <div class="well">
+                         <p>@Html.Partial("MultiPassageRule")</p>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <footer class="container-fluid text-center">
+          <p>Footer Text</p>
+     </footer>
+
+</body>
+
+</html>
+
+<script type="text/javascript">
+     $(document).ready(function () {
+          $('#StartDate').datepicker({
+               orientation: "left",
+               autoclose: true,
+               format: 'dd-M-yy',
+               clearBtn: true
+          });
+          $("#btnSubmit").click(function () {
+               document.getElementById("btnSubmit").value = "Calculating...";
+          }
+          );
+
+          //function SetValue() {
+          //     document.getElementById("btnSubmit").value = "Calculating...";
+          //}
+     });
+</script>

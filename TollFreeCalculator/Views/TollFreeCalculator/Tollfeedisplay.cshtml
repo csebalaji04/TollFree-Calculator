@@ -1,0 +1,37 @@
+﻿@model TollTimes
+
+
+	 <h2> Times and costs for congestion tax in Gothenburg</h2>
+
+<div>
+	@if(Model.MyMappings.Count()!=0)
+	{
+		<table>			
+			 <tboby>
+			 	 <tr>
+			 	 	 <td style="width:150px">
+			 	 	 	 @Html.Label("Times (time)")
+			 </td>
+					 <td>
+					 	 @Html.Label("Tax amount (SEK)")
+					 </td>
+			 </tr>
+			 @foreach (var item in Model.MyMappings)
+			 {
+
+			 	 <tr>
+			 	 	 <td>
+			 	 	 	 @Html.LabelForModel(item.Key)
+			 </td>
+			 <td>
+			 	 @Html.LabelForModel(item.Value)
+			 </td>
+			 </tr>
+		}
+			 </tboby>
+		</table>
+
+	}
+
+
+</div>
